@@ -15,26 +15,26 @@ int dfs_squashfs_mount(struct dfs_filesystem *fs, unsigned long rwflag, const vo
     /* 判断数据的合法性, 如果不是squashfs文件系统则挂载失败 */ 
     if(data == NULL || strncmp((char *)data, "hsqs", 4))
     {
-        rt_kprintf("dfs mount squashfs failed\n"); 
+        // rt_kprintf("dfs mount squashfs failed\n"); 
         return (-EIO); 
     }
     
     fs_sq = (sqfs *)rt_calloc(1, sizeof(sqfs)); 
     if(!fs_sq)
     {
-        rt_kprintf("squash fs alloc fail\n"); 
+        // rt_kprintf("squash fs alloc fail\n"); 
         return (-ENOMEM); 
     }
 
     ret = sqfs_open_image(fs_sq, (const uint8_t *)data, 0);
     if(SQFS_OK != ret)
     {
-        rt_kprintf("open squashfs image fail\n");
+        // rt_kprintf("open squashfs image fail\n");
         return (-EIO); 
     }
 
     fs->data = (void *)fs_sq; 
-    rt_kprintf("Mount 0x%p SquashFS v%d.%d\n", data, fs_sq->sb->s_major, fs_sq->sb->s_minor); 
+    // rt_kprintf("Mount 0x%p SquashFS v%d.%d\n", data, fs_sq->sb->s_major, fs_sq->sb->s_minor); 
     
     return RT_EOK;
 }
@@ -198,21 +198,22 @@ int dfs_squashfs_getdents(struct dfs_fd *file, struct dirent *dirp, uint32_t cou
     index = 0;
     while(1)
     {
-        d = dirp + index;
-
+        d = dirp + index; 
         dirent = squash_readdir(dir); 
-        if(!dirent)
+        if(!dirent) 
         {
             break;
         } 
         d->d_type = dirent->d_type; 
         d->d_namlen = dirent->d_namlen; 
-        d->d_reclen = dirent->d_ino; 
+        d->d_reclen = (rt_uint16_t)sizeof(struct dirent); 
         memcpy(d->d_name, dirent->d_name, DFS_PATH_MAX); 
 
         index++; 
         if (index * sizeof(struct dirent) >= count)
+        {
             break; 
+        }
     }
 
     if(index == 0)

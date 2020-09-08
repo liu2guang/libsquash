@@ -159,24 +159,29 @@ static SQUASH_OS_PATH squash_uncached_extract(sqfs *fs, const char *path, const 
 
 	fd = squash_open(fs, path);
 	if (-1 == fd) {
+		// printf("xxxxxxxxxxxxxxxxxxxxx1\n"); 
 		return NULL;
 	}
 	if (NULL == tmpdir) {
 		tmpdir = squash_tmpdir();
 	}
 	if (NULL == tmpdir) {
+		// printf("xxxxxxxxxxxxxxxxxxxxx2\n"); 
 		return NULL;
 	}
 	tmpf = squash_tmpf(tmpdir, ext_name);
 	if (NULL == tmpf) {
+		// printf("xxxxxxxxxxxxxxxxxxxxx3\n"); 
 		return NULL;
 	}
+	// printf("xxxxxxxxxxxxxxxxxxxxx %s\n", tmpf); 
 #ifdef _WIN32
 	fp = _wfopen(tmpf, L"wb");
 #else
 	fp = fopen(tmpf, "wb");
 #endif
 	if (NULL == fp) {
+		// printf("xxxxxxxxxxxxxxxxxxxxx4\n"); 
 		free(tmpf);
 		return NULL;
 	}
@@ -187,11 +192,13 @@ static SQUASH_OS_PATH squash_uncached_extract(sqfs *fs, const char *path, const 
 		if (ssize <= 0) {
 			fclose(fp);
 			free(tmpf);
+			// printf("xxxxxxxxxxxxxxxxxxxxx5\n"); 
 			return NULL;
 		}
 		offset -= ssize;
 		size = fwrite(buffer, ssize, 1, fp);
 		if (size != 1) {
+			// printf("xxxxxxxxxxxxxxxxxxxxx6\n"); 
 			fclose(fp);
 			free(tmpf);
 			return NULL;
@@ -245,6 +252,7 @@ SQUASH_OS_PATH squash_extract(sqfs *fs, const char *path, const char *ext_name)
 		return found->ret;
 	}
 	ret = squash_uncached_extract(fs, path, ext_name);
+	// printf("xxxxxxxxxxxxxxxxxxxxx ret = %d\n", ret); 
 	if (NULL != ret) {
 		squash_extract_cache_insert(fs, path, ret);
 	}

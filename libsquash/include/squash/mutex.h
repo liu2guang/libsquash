@@ -9,15 +9,20 @@
 #ifndef LIBSQUASH_MUTEX_H
 #define LIBSQUASH_MUTEX_H
 
-#ifdef _WIN32
+#if defined(_WIN32)
     #include <windows.h>
     #include <process.h>
+#elif defined(_RTTHREAD)
+    #include <rtthread.h>
 #else
     #include <pthread.h>
 #endif
 
-#ifdef _WIN32
+#if defined(_WIN32)
    #define MUTEX HANDLE
+#elif defined(_RTTHREAD)
+    // #define MUTEX struct rt_mutex 
+    #define MUTEX rt_mutex_t 
 #else
    #define MUTEX pthread_mutex_t
 #endif

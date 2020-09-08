@@ -30,7 +30,7 @@
 #include <sys/stat.h>
 #include "squash/mutex.h"
 
-#ifdef _WIN32
+#if defined(_WIN32)
 	#include "squash/windows.h"
         struct squash_windows_dirent
         {
@@ -40,6 +40,16 @@
                 uint8_t d_type;
         };
         #define SQUASH_DIRENT squash_windows_dirent
+#elif defined(_RTTHREAD)
+	#include "squash/rtt.h" 
+        struct squash_rtt_dirent
+        {
+                long d_namlen;
+                ino_t d_ino;
+                char d_name[256 + 1]; // i.e. SQUASHFS_NAME_LEN + 1
+                uint8_t d_type;
+        };
+        #define SQUASH_DIRENT squash_rtt_dirent
 #else
 	#include <sys/dir.h>
 	#include <unistd.h>
